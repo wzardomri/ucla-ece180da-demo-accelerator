@@ -9,14 +9,17 @@ module accelerator_status_demo (
     output logic done_o,
     output logic error_o
 );
-    // TODO: retain completion/error while activate remains asserted.
+    // Completion remains visible until the CSR side clears activation.
     always_ff @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             done_o  <= 1'b0;
             error_o <= 1'b0;
-        end else begin
+        end else if (!activate_i) begin
             done_o  <= 1'b0;
             error_o <= 1'b0;
+        end else if (job_done_i) begin
+            done_o  <= 1'b1;
+            error_o <= job_error_i;
         end
     end
 endmodule
